@@ -1,0 +1,52 @@
+{
+  "actionGroups": [
+    {
+      "actionGroupName": "nightwatch-investigation-tools",
+      "description": "Read-only tools for investigating production incidents. Reads CloudWatch metrics, logs, ECS service health, and deployment history.",
+      "functions": [
+        {
+          "name": "get_service_health",
+          "description": "Current snapshot of checkout-service: status, running version, task count, and alarm state.",
+          "parameters": {}
+        },
+        {
+          "name": "get_metrics",
+          "description": "Get service metrics (CPU, memory, error count) over a recent window with baseline comparison.",
+          "parameters": {
+            "minutes_back": {
+              "type": "integer",
+              "description": "Window size in minutes, e.g. 15 or 30",
+              "required": false
+            },
+            "alarm_time": {
+              "type": "string",
+              "description": "ISO timestamp of the alarm. If provided, metrics are centered around this time instead of now.",
+              "required": false
+            }
+          }
+        },
+        {
+          "name": "get_error_logs",
+          "description": "Query application error logs over a recent time window. Returns error patterns, timeline, and sample messages.",
+          "parameters": {
+            "minutes_back": {
+              "type": "integer",
+              "description": "How many minutes of logs to query",
+              "required": false
+            },
+            "alarm_time": {
+              "type": "string",
+              "description": "ISO timestamp of the alarm. If provided, log window is centered around the alarm time.",
+              "required": false
+            }
+          }
+        },
+        {
+          "name": "get_recent_deploys",
+          "description": "List recent deployments to checkout-service, newest first, including task definition revisions.",
+          "parameters": {}
+        }
+      ]
+    }
+  ]
+}

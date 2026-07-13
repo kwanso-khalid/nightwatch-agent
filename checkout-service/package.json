@@ -1,0 +1,14 @@
+{
+  "name": "checkout-service",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Real checkout service for Nightwatch monitoring demo",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

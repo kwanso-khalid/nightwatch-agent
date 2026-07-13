@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nightwatch — AWS Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #fff; color: #232f3e; font-family: 'Amazon Ember', -apple-system, 'Segoe UI', sans-serif; padding: 40px; }
+  .page { max-width: 1000px; margin: 0 auto; }
+
+  .title { text-align: center; margin-bottom: 8px; }
+  .title h1 { font-size: 24px; font-weight: 700; color: #232f3e; }
+  .title h1 span { color: #FF9900; }
+  .subtitle { text-align: center; font-size: 12px; color: #687078; margin-bottom: 36px; }
+
+  /* AWS-style service boxes */
+  .svc {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 16px; border-radius: 8px; border: 2px solid #d5dbdb;
+    background: #fff; min-width: 180px; position: relative;
+  }
+  .svc-icon { font-size: 28px; flex-shrink: 0; }
+  .svc-text h4 { font-size: 12px; font-weight: 700; color: #232f3e; line-height: 1.3; }
+  .svc-text p { font-size: 9px; color: #687078; line-height: 1.4; margin-top: 1px; }
+
+  /* Color variants */
+  .svc-compute { border-color: #FF9900; background: #fff8ef; }
+  .svc-management { border-color: #E7157B; background: #fef5f9; }
+  .svc-integration { border-color: #E7157B; background: #fef5f9; }
+  .svc-ai { border-color: #1B660F; background: #f3faf2; }
+  .svc-database { border-color: #3B48CC; background: #f4f5fd; }
+  .svc-external { border-color: #4A154B; background: #faf5fa; }
+
+  /* Layout */
+  .row { display: flex; justify-content: center; align-items: center; gap: 0; margin: 0; }
+  .arrow { display: flex; flex-direction: column; align-items: center; padding: 6px 0; }
+  .arrow .line { width: 2px; height: 24px; background: #879196; }
+  .arrow .head { color: #879196; font-size: 14px; line-height: 1; }
+  .arrow .label { font-size: 8px; color: #879196; max-width: 120px; text-align: center; margin-top: 2px; }
+
+  .arrow-h { display: flex; align-items: center; padding: 0 8px; }
+  .arrow-h .line { height: 2px; width: 40px; background: #879196; }
+  .arrow-h .head { color: #879196; font-size: 14px; }
+  .arrow-h .label { font-size: 8px; color: #879196; writing-mode: horizontal-tb; margin-top: 2px; text-align: center; }
+
+  /* Zones */
+  .zone { border: 2px dashed #d5dbdb; border-radius: 12px; padding: 16px; margin: 12px 0; position: relative; }
+  .zone-label { position: absolute; top: -10px; left: 20px; background: #fff; padding: 0 8px; font-size: 10px; color: #879196; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Region bar */
+  .region-bar { border: 2px solid #232f3e; border-radius: 14px; padding: 20px; margin-bottom: 0; position: relative; }
+  .region-label { position: absolute; top: -10px; left: 24px; background: #fff; padding: 0 10px; font-size: 11px; color: #232f3e; font-weight: 700; }
+
+  /* Bottom notes */
+  .notes { display: flex; gap: 16px; margin-top: 24px; }
+  .note-card { flex: 1; padding: 14px; border-radius: 8px; border: 1px solid #d5dbdb; text-align: center; }
+  .note-card h4 { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+  .note-card p { font-size: 9px; color: #687078; line-height: 1.5; }
+
+  .footer { text-align: center; margin-top: 16px; font-size: 9px; color: #879196; }
+
+  /* Flow step numbers */
+  .step-num { width: 18px; height: 18px; border-radius: 50%; background: #232f3e; color: #fff; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; position: absolute; top: -6px; left: -6px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="title"><h1>Nightwatch — <span>AWS</span> Architecture</h1></div>
+<div class="subtitle">AI First Responder for Production Incidents · Amazon Bedrock · Read-Only Agent</div>
+
+<div class="region-bar">
+<div class="region-label">☁ AWS Cloud · us-east-1</div>
+
+  <!-- Row 1: Application -->
+  <div class="row">
+    <div class="svc svc-compute" style="position:relative;">
+      <div class="step-num">1</div>
+      <div class="svc-icon">📦</div>
+      <div class="svc-text">
+        <h4>Amazon ECS Fargate</h4>
+        <p>checkout-service<br>0.25 vCPU · 512MB · Node 20</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="line"></div><div class="head">▼</div><div class="label">stdout (structured JSON)</div></div>
+
+  <!-- Row 2: Monitoring -->
+  <div class="row" style="gap: 24px;">
+    <div class="svc svc-management" style="position:relative;">
+      <div class="step-num">2</div>
+      <div class="svc-icon">📋</div>
+      <div class="svc-text">
+        <h4>CloudWatch Logs</h4>
+        <p>/ecs/nightwatch-checkout<br>Metric filter → ErrorCount</p>
+      </div>
+    </div>
+
+    <div class="arrow-h"><div class="line"></div><div class="head">▶</div></div>
+
+    <div class="svc svc-management" style="position:relative;">
+      <div class="step-num">3</div>
+      <div class="svc-icon">🔔</div>
+      <div class="svc-text">
+        <h4>CloudWatch Alarm</h4>
+        <p>ErrorCount ≥ 5/min<br>OK → ALARM triggers SNS</p>
+      </div>
+    </div>
+
+    <div class="arrow-h"><div class="line"></div><div class="head">▶</div></div>
+
+    <div class="svc svc-integration" style="position:relative;">
+      <div class="step-num">4</div>
+      <div class="svc-icon">📨</div>
+      <div class="svc-text">
+        <h4>Amazon SNS</h4>
+        <p>nightwatch-alarm<br>Routes to Lambda</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="line"></div><div class="head">▼</div><div class="label">alarm notification</div></div>
+
+  <!-- Row 3: Trigger Lambda -->
+  <div class="row">
+    <div class="svc svc-compute" style="position:relative;">
+      <div class="step-num">5</div>
+      <div class="svc-icon">⚡</div>
+      <div class="svc-text">
+        <h4>AWS Lambda (Trigger)</h4>
+        <p>nightwatch-trigger · 256MB<br>Invokes Bedrock Agent<br>Sends report to Slack</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow"><div class="line"></div><div class="head">▼</div><div class="label">InvokeAgent API</div></div>
+
+  <!-- Row 4: Bedrock Agent zone -->
+  <div class="zone">
+    <div class="zone-label">Amazon Bedrock — AI Investigation</div>
+
+    <div class="row" style="gap: 24px;">
+      <div class="svc svc-ai" style="position:relative; min-width: 260px;">
+        <div class="step-num">6</div>
+        <div class="svc-icon">🧠</div>
+        <div class="svc-text">
+          <h4>Bedrock Agent</h4>
+          <p>Claude Sonnet 4.6<br>Decides what to investigate<br>Reasons about data<br>Produces findings report</p>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+        <div class="arrow-h"><div class="head">◀</div><div class="line"></div><div class="head">▶</div></div>
+        <div style="font-size:8px; color:#879196;">Action Groups</div>
+      </div>
+
+      <div class="svc svc-compute" style="position:relative; min-width: 280px;">
+        <div class="step-num">7</div>
+        <div class="svc-icon">🔍</div>
+        <div class="svc-text">
+          <h4>AWS Lambda (Tools) · READ-ONLY</h4>
+          <p>get_service_health → ECS API<br>get_error_logs → CW Logs Insights<br>get_metrics → CW GetMetricData<br>get_recent_deploys → ECS TaskDefs</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrows from Tools back to data sources -->
+  <div style="display: flex; justify-content: space-between; padding: 0 60px; margin-top: -4px;">
+    <div style="font-size: 8px; color: #879196; text-align: center;">
+      ↑ reads from<br>CloudWatch + ECS
+    </div>
+    <div></div>
+  </div>
+
+  <div class="arrow"><div class="line"></div><div class="head">▼</div><div class="label">findings report</div></div>
+
+  <!-- Row 5: Output -->
+  <div class="row" style="gap: 24px;">
+    <div class="svc svc-external" style="position:relative;">
+      <div class="step-num">8</div>
+      <div class="svc-icon">💬</div>
+      <div class="svc-text">
+        <h4>Slack</h4>
+        <p>🚨 Incident Detected<br>🎯 Root cause + evidence<br>📋 Recommended action</p>
+      </div>
+    </div>
+
+    <div class="svc svc-database" style="position:relative;">
+      <div class="svc-icon">📊</div>
+      <div class="svc-text">
+        <h4>Amazon DynamoDB</h4>
+        <p>nightwatch-investigations<br>Investigation audit trail</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end region bar -->
+
+<!-- Bottom notes -->
+<div class="notes">
+  <div class="note-card">
+    <h4>🔒 Security</h4>
+    <p>Tool Lambda is read-only<br>Explicit DENY on all writes<br>Cannot modify infrastructure</p>
+  </div>
+  <div class="note-card">
+    <h4>🧠 AI Model</h4>
+    <p>Claude Sonnet 4.6 via Bedrock<br>~1,400 tokens input per run<br>Decides tool call order autonomously</p>
+  </div>
+  <div class="note-card">
+    <h4>🏗 Infrastructure</h4>
+    <p>Deployed via AWS CDK (TypeScript)<br>Fully serverless (except ECS)<br>Single cdk destroy cleans all</p>
+  </div>
+  <div class="note-card">
+    <h4>🧪 Two Test Scenarios</h4>
+    <p><strong>db-pool:</strong> SQLTimeoutException<br><strong>upstream:</strong> payments-api timeout<br>Same alarm, different reasoning</p>
+  </div>
+</div>
+
+<div class="footer">
+  Built with Amazon Bedrock Agents · Claude Sonnet 4.6 · ECS Fargate · CloudWatch · Lambda · SNS · DynamoDB · CDK
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nightwatch — How the Agent Works</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d1117; color: #e6edf3; font-family: -apple-system, 'Segoe UI', sans-serif; padding: 40px; }
+  .page { max-width: 900px; margin: 0 auto; }
+  .title { text-align: center; margin-bottom: 50px; }
+  .title h1 { font-size: 28px; font-weight: 700; }
+  .title h1 span { color: #FF9900; }
+  .title p { font-size: 13px; color: #8b949e; margin-top: 8px; }
+
+  .step { display: flex; gap: 0; margin-bottom: 0; }
+  .step-left { width: 70px; display: flex; flex-direction: column; align-items: center; }
+  .step-num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
+  .step-line { flex: 1; width: 3px; margin: 4px 0; }
+  .step-right { flex: 1; padding: 8px 0 28px 16px; }
+  .step-right h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .step-right p { font-size: 13px; color: #8b949e; line-height: 1.7; }
+  .step-right .service { display: inline-block; margin-top: 8px; font-size: 11px; padding: 4px 12px; border-radius: 8px; font-weight: 600; }
+
+  .badge { display: inline-block; font-size: 9px; padding: 2px 8px; border-radius: 8px; font-weight: 600; margin-left: 8px; vertical-align: middle; letter-spacing: 0.5px; }
+
+  .summary { margin-top: 40px; background: #161b22; border: 1px solid #30363d; border-radius: 14px; padding: 24px; }
+  .summary h3 { font-size: 15px; margin-bottom: 16px; text-align: center; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
+  .svc-list { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .svc { padding: 10px 16px; border-radius: 10px; border: 1px solid #30363d; background: #0d1117; text-align: center; min-width: 120px; }
+  .svc .icon { font-size: 20px; margin-bottom: 4px; }
+  .svc .name { font-size: 12px; font-weight: 600; }
+  .svc .role { font-size: 10px; color: #8b949e; margin-top: 2px; }
+
+  .note { margin-top: 24px; text-align: center; padding: 16px; border-radius: 10px; border: 1px solid rgba(63,185,80,0.2); background: rgba(63,185,80,0.04); }
+  .note p { font-size: 12px; color: #8b949e; }
+  .note strong { color: #3fb950; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="title">
+  <h1><span>Nightwatch</span> Agent — How It Works</h1>
+  <p>An AI first responder that investigates production incidents automatically</p>
+</div>
+
+<div class="flow">
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #3fb950;">1</div>
+      <div class="step-line" style="background: #3fb950;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #3fb950;">Your Application Runs on AWS</h3>
+      <p>A real service runs in a container, processing requests and logging everything. Business as usual.</p>
+      <span class="service" style="background: rgba(63,185,80,0.1); color: #3fb950; border: 1px solid rgba(63,185,80,0.2);">ECS Fargate — runs the application</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #f85149;">2</div>
+      <div class="step-line" style="background: #f85149;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #f85149;">Something Goes Wrong</h3>
+      <p>The service starts failing. Errors appear in the logs. Customers are affected.</p>
+      <span class="service" style="background: rgba(248,81,73,0.1); color: #f85149; border: 1px solid rgba(248,81,73,0.2);">CloudWatch Logs — captures all application logs</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #f0883e;">3</div>
+      <div class="step-line" style="background: #f0883e;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #f0883e;">AWS Detects the Problem <span class="badge" style="background: rgba(240,136,62,0.15); color: #f0883e;">AUTOMATIC</span></h3>
+      <p>CloudWatch monitors error rates continuously. When errors exceed the threshold, an alarm fires and sends an alert.</p>
+      <span class="service" style="background: rgba(240,136,62,0.1); color: #f0883e; border: 1px solid rgba(240,136,62,0.2);">CloudWatch Alarm → SNS — detects and routes the alert</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #58a6ff;">4</div>
+      <div class="step-line" style="background: #58a6ff;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #58a6ff;">Nightwatch Agent Wakes Up <span class="badge" style="background: rgba(88,166,255,0.15); color: #58a6ff;">AUTOMATIC</span></h3>
+      <p>The alert automatically triggers a small program that wakes up the AI agent and says: "There's a problem. Investigate."</p>
+      <span class="service" style="background: rgba(88,166,255,0.1); color: #58a6ff; border: 1px solid rgba(88,166,255,0.2);">Lambda (Trigger) — receives the alert, starts the agent</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #FF9900;">5</div>
+      <div class="step-line" style="background: #FF9900;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #FF9900;">AI Investigates Like a Senior Engineer</h3>
+      <p>The AI agent (powered by Amazon Bedrock with Claude) decides what data to check. It reads service health, error logs, performance metrics, and deployment history — all from real AWS data.</p>
+      <span class="service" style="background: rgba(255,153,0,0.1); color: #FF9900; border: 1px solid rgba(255,153,0,0.2);">Bedrock Agent (Claude Sonnet) — the AI brain that reasons</span>
+      <br>
+      <span class="service" style="background: rgba(255,153,0,0.1); color: #FF9900; border: 1px solid rgba(255,153,0,0.2);">Lambda (Tools) — reads real data from CloudWatch and ECS</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #a78bfa;">6</div>
+      <div class="step-line" style="background: #a78bfa;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #a78bfa;">Agent Connects the Dots</h3>
+      <p>The AI correlates signals across all data sources: "These errors point to the payment service timing out. CPU and memory are fine — this is not our code, it's an upstream dependency."</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #FF9900;">7</div>
+      <div class="step-line" style="background: #FF9900;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #FF9900;">Report Delivered to Your Team</h3>
+      <p>The agent sends a clear, actionable report to Slack: what broke, why, what evidence supports it, and what the engineer should do next.</p>
+      <span class="service" style="background: rgba(255,153,0,0.1); color: #FF9900; border: 1px solid rgba(255,153,0,0.2);">Slack — delivers the investigation report</span>
+      <br>
+      <span class="service" style="background: rgba(255,153,0,0.1); color: #FF9900; border: 1px solid rgba(255,153,0,0.2);">DynamoDB — saves the investigation record</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-left">
+      <div class="step-num" style="background: #3fb950;">8</div>
+      <div class="step-line" style="background: transparent;"></div>
+    </div>
+    <div class="step-right">
+      <h3 style="color: #3fb950;">Engineer Makes the Decision</h3>
+      <p>The on-call engineer reads the report — root cause, evidence, recommendation — and decides what to do. The agent investigated in 60 seconds what would take a human 45 minutes.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- AWS Services -->
+<div class="summary">
+  <h3>AWS Services Used</h3>
+  <div class="svc-list">
+    <div class="svc">
+      <div class="icon">📦</div>
+      <div class="name">ECS Fargate</div>
+      <div class="role">Runs the app</div>
+    </div>
+    <div class="svc">
+      <div class="icon">📋</div>
+      <div class="name">CloudWatch Logs</div>
+      <div class="role">Captures logs</div>
+    </div>
+    <div class="svc">
+      <div class="icon">🔔</div>
+      <div class="name">CloudWatch Alarm</div>
+      <div class="role">Detects problems</div>
+    </div>
+    <div class="svc">
+      <div class="icon">📨</div>
+      <div class="name">SNS</div>
+      <div class="role">Routes alerts</div>
+    </div>
+    <div class="svc">
+      <div class="icon">⚡</div>
+      <div class="name">Lambda</div>
+      <div class="role">Triggers agent + reads data</div>
+    </div>
+    <div class="svc">
+      <div class="icon">🧠</div>
+      <div class="name">Bedrock</div>
+      <div class="role">AI reasoning engine</div>
+    </div>
+    <div class="svc">
+      <div class="icon">📊</div>
+      <div class="name">DynamoDB</div>
+      <div class="role">Saves investigations</div>
+    </div>
+    <div class="svc">
+      <div class="icon">💬</div>
+      <div class="name">Slack</div>
+      <div class="role">Delivers reports</div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <p><strong>The agent can only read.</strong> It investigates and reports. It cannot restart, rollback, or modify anything in your infrastructure.</p>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "nightwatch-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Autonomous incident response agent built on Amazon Bedrock",
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "deploy": "bash scripts/aws/deploy-all.sh",
+    "teardown": "bash scripts/aws/teardown.sh"
+  },
+  "keywords": ["bedrock", "incident-response", "aws", "ai-agent"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-bedrock": "^3.1079.0",
+    "@aws-sdk/client-bedrock-agent": "^3.1079.0",
+    "@aws-sdk/client-bedrock-agent-runtime": "^3.1079.0",
+    "@aws-sdk/client-iam": "^3.1079.0",
+    "@aws-sdk/client-sts": "^3.1079.0"
+  }
+}
