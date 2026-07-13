@@ -105,4 +105,3 @@ docs/                       # Architecture diagrams and documentation
 ## License
 
 [MIT](LICENSE)
-# nightwatch-agent
