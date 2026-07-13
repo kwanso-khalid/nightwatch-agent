@@ -33,12 +33,12 @@ CloudWatch Alarm → SNS Topic → Trigger Lambda → Bedrock Agent (Claude Sonn
 
 ## What the Agent Does
 
-| Step | What Happens |
-| ---- | ------------ |
-| CloudWatch Alarm fires | SNS triggers the Trigger Lambda |
-| Agent investigates | Tool-calls to pull metrics, logs, deploys — all read-only |
-| Root cause found | Forms hypothesis with confidence level, evidence chain, and ruled-out alternatives |
-| Report delivered | Sends structured investigation report to Slack |
+| Step                   | What Happens                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| CloudWatch Alarm fires | SNS triggers the Trigger Lambda                                                    |
+| Agent investigates     | Tool-calls to pull metrics, logs, deploys — all read-only                          |
+| Root cause found       | Forms hypothesis with confidence level, evidence chain, and ruled-out alternatives |
+| Report delivered       | Sends structured investigation report to Slack                                     |
 
 ---
 
@@ -105,3 +105,4 @@ docs/                       # Architecture diagrams and documentation
 ## License
 
 [MIT](LICENSE)
+
